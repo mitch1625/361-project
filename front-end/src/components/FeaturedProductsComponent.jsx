@@ -4,7 +4,7 @@ import IndividualProductComponent from "./IndividualProductComponent"
 function FeaturedProductsComponent () {
  return (
   <>
-   <h2>Discover Our Best-Selling Coffees</h2>
+   <div>Discover Our Best-Selling Coffees</div>
    <div id='featured-product-container'>
     <IndividualProductComponent/>
     <IndividualProductComponent/>
