@@ -1,6 +1,7 @@
 function AllProductsComponent() {
  return (
   <>
+
   </>
  )
 }

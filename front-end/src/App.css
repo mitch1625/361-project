@@ -2,35 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-
 input {
   font-size: 1.4rem;
 }
 
-#root {
-  font-family: 'Kameron';
+* {
+    font-family: 'Kameron';
 }
 
 #body {
-  margin: 0;
+  margin: 0px;
+  padding: 0px;
   width: 100vw;
   height: 100vh;
-
 }
 
 a{
   text-decoration: none;
   color: black;
 }
+ 
 #nav-bar{
   padding: 3rem;
   font-size: 2rem;
   color: #000;
+  border-bottom: 1px solid black;
 }
 
 #banner-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  margin: 0;
 }
 
 .banner-text {
@@ -46,9 +48,10 @@ a{
   background-position: center;
   background-attachment: fixed;
   grid-column: span 5;
+  margin: 0;
 }
 
-#featured-product-container {
+#featured-product-container, #all-product-container {
   display:grid; 
   grid-template-columns: repeat(3, 1fr);
 }
@@ -106,7 +109,7 @@ button {
   margin-top: 0;
 }
 
-#login-page {
+#login-page, #registration-page {
   padding-top: 4rem;
   display: flex;
   flex-direction: column;

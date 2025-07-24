@@ -33,7 +33,7 @@ function LoginPage() {
         </input>
       </div> 
     </form>
-    <button id="login-button" type="button" onClick={()=>alert(`Logging in:\n Email: ${email}\n Password: ${password}`)}>Login</button>
+    <button id="login-register-button" type="button" onClick={()=>alert(`Logging in:\n Email: ${email}\n Password: ${password}`)}>Login</button>
     <div className="login-register-redirect-text">
       Don't have an account? Click <Link to='/register'>here to register.</Link>
     </div>

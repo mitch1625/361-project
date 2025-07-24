@@ -4,7 +4,7 @@ function NavBar() {
  return (
   <>
   <div id='nav-bar' className="flex flex-row justify-between">
-    <div>Coffee Shop</div>
+    <div><Link to='/'>Coffee Shop</Link></div>
     <nav className="flex justify-evenly w-1/2">
      <Link to='/'>Home</Link>
      <Link to='/all-products'>Shop</Link>

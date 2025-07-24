@@ -1,6 +1,7 @@
 function ProductDetailPage() {
  return (
   <>
+
   </>
  )
 }
