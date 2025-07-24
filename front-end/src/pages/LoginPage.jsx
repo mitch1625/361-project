@@ -1,6 +1,6 @@
 import { useState } from "react"
 import ButtonComponent from "../components/ButtonComponent"
-
+import { Link } from "react-router-dom"
 function LoginPage() {
  const [email, setEmail] = useState("")
  const [password, setPassword] = useState("")
@@ -35,7 +35,7 @@ function LoginPage() {
     </form>
     <button id="login-button" type="button" onClick={()=>alert(`Logging in:\n Email: ${email}\n Password: ${password}`)}>Login</button>
     <div className="login-register-redirect-text">
-      Already have an account? Click here to sign in.
+      Don't have an account? Click <Link to='/register'>here to register.</Link>
     </div>
     </div>
   </>
