@@ -120,6 +120,10 @@ button {
   margin-top: 0;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 #login-page, #registration-page {
   padding-top: 4rem;
   display: flex;
@@ -183,4 +187,41 @@ form {
 
 #all-products-desc {
 	font-size: 1.25rem;
+}
+
+
+#product-details-container {
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
+}
+
+#product-details-product{
+  grid-column-start: 2;
+  grid-column-end: 3;
+}
+
+#product-details-text {
+  display: flex;
+  flex-direction: column;
+  grid-column-start: 3;
+  grid-column-end: 4;
+  font-size: 2rem;
+}
+
+#product-details-size-price {
+  font-size: 2.5rem;
+}
+
+#product-details-button-container {
+  grid-column-start: 3;
+  display: flex;
+
+}
+
+#quantity-input {
+  width: 10%;
+  text-align: center;
 }

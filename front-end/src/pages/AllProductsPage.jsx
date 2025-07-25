@@ -9,7 +9,7 @@ function AllProductsPage() {
     setSortGroup(event.target.value)
 
   }
-  
+
  return (
   <>
     <div id='all-products-text-container'>
