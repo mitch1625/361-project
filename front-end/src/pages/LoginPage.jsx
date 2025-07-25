@@ -1,10 +1,12 @@
 import { useState } from "react"
 import ButtonComponent from "../components/ButtonComponent"
+import { useNavigate } from "react-router-dom"
+
 import { Link } from "react-router-dom"
 function LoginPage() {
- const [email, setEmail] = useState("")
- const [password, setPassword] = useState("")
-
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
  return (
   <>
@@ -33,7 +35,7 @@ function LoginPage() {
         </input>
       </div> 
     </form>
-    <button id="login-register-button" type="button" onClick={()=>alert(`Logging in:\n Email: ${email}\n Password: ${password}`)}>Login</button>
+    <button id="login-register-button" type="button" onClick={()=>{alert(`Logging in:\n Email: ${email}\n Password: ${password}`), navigate('/')}}>Login</button>
     <div className="login-register-redirect-text">
       Don't have an account? Click <Link to='/register'>here to register.</Link>
     </div>
