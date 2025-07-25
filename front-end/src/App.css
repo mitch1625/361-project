@@ -36,27 +36,38 @@ a{
 }
 
 .banner-text {
-  grid-template-areas: 'overlayarea';
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  height: auto;
+  z-index: 1;
+  font-size: 4rem;
+  top:20%;
+  left: 15%
 }
+
+#banner-button {
+  position: absolute;
+  top: 35%;
+  left:28%;
+  font-size: 3.5rem;
+}
+
 #home-banner {
   position: relative;
   max-width: 100%;
   height: auto;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
   grid-column: span 5;
   margin: 0;
+  z-index: -1;
 }
+
+
 
 #featured-product-container, #all-product-container {
   display:grid; 
   grid-template-columns: repeat(3, 1fr);
 }
 
-#featured-items-header {
+#featured-items-header, #all-products-header {
   padding-top: 1rem;
   padding-bottom: 1rem;
   font-size: 3rem;
@@ -151,4 +162,25 @@ form {
 
 .login-register-redirect-text {
   font-size: 1.5rem;
+}
+
+#filter-comp {
+  padding: 2rem;
+  padding-left: 6rem;
+}
+
+#sort-by-comp {
+  font-size: 2rem;
+}
+
+#all-products-text-container {
+  padding-left: 6rem;
+  padding-right: 6rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#all-products-desc {
+	font-size: 1.25rem;
 }
