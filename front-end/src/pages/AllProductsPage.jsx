@@ -1,15 +1,29 @@
 import IndividualProductComponent from "../components/IndividualProductComponent"
 import SortByComponent from "../components/SortByComponent"
 import { useState } from "react"
+import { allProducts } from "../productData"
 
 function AllProductsPage() {
   const [sortGroup, setSortGroup] = useState("AlphaA-Z")
 
   function handleSort(event) {
     setSortGroup(event.target.value)
-
   }
 
+const sortedProducts = [...allProducts].sort((a, b) => {
+  switch (sortGroup) {
+    case "AlphaA-Z":
+      return a.productName.localeCompare(b.productName)
+    case "AlphaZ-A":
+      return b.productName.localeCompare(a.productName)
+    case "PriceL-H":
+      return a.price - b.price
+    case "PriceH-L":
+      return b.price - a.price
+    default:
+      return 0
+  }
+})
  return (
   <>
     <div id='all-products-text-container'>
@@ -18,15 +32,12 @@ function AllProductsPage() {
     </div>
     <SortByComponent handleSort={handleSort}/>
     <div id='all-product-container'>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
-      <IndividualProductComponent/>
+      {sortedProducts.map((product, index) => (
+        <IndividualProductComponent 
+          product={product}
+          key={index}
+        />
+      ))}
     </div>
   </>
  )

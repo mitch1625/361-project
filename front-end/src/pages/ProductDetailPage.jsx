@@ -1,11 +1,15 @@
 import IndividualProductComponent from "../components/IndividualProductComponent"
-import ProductDetailsComponent from "../components/ProductDetailsComponent"
+// import ProductDetailsComponent from "../components/ProductDetailsComponent"
 import coffeeImg from "../assets/coffeeBag.png"
 import { useState } from "react"
-
+import { useParams } from "react-router-dom"
+import { allProducts } from "../productData"
 
 function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
+  const {productName} = useParams()
+  
+  const product = allProducts.find(p => p.productName === productName)
 
   const decreaseQuantity = () => {
     if (quantity > 1){
@@ -28,20 +32,13 @@ function ProductDetailPage() {
           <div id='ind-product-container'>
             <img id='ind-product-img' src={coffeeImg}/>
             <div>
-            <h3 id="ind-product-details">Product Name</h3>
-            <div id='ind-product-flavors'>Flavor1 • Flavor2 • Flavor3</div>
+            <h3 id="ind-product-details">{product.productName}</h3>
+            <div id='ind-product-flavors'>{product.flavors[0]} • {product.flavors[1]} • {product.flavors[2]}</div>
             </div>
             </div>
     </div>
     <div id='product-details-text'>
-      <p>
-      Smooth. Sweet. Effortless. Vanilla Drift is our signature cold brew, slow-steeped for 18 
-      hours and infused with natural vanilla for a subtly sweet finish. 
-      Made with 100% Arabica beans and a hint of oat milk, it 
-      delivers a velvety-smooth flavor that’s both refreshing and comforting — perfect for mornings, afternoons, or anytime you need a gentle kick.
-      Whether you're sipping it over ice or straight from the bottle, 
-      Vanilla Drift is your go-to for an easy, flavorful escape.
-      </p>
+      <p>{product.description}</p>
       <div id='product-details-size-price'>
         Size: 12 oz bottle<br/>
         Price: $4.99
