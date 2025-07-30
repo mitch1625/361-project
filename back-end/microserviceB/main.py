@@ -1,14 +1,14 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Request
 from pydantic import BaseModel
 from typing import List, Annotated
 from database import engine, SessionLocal, Base
 import models
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
+from jose import JWTError, jwt
 from datetime import datetime, timezone, timedelta
 import os
-
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 app = FastAPI()
 models.Base.metadata.create_all(bind=engine)
@@ -20,14 +20,15 @@ class SignUpRequest(BaseModel):
   last_name: str
   password: str
 
-  class UserResponse(BaseModel):
-    id: int
-    email: str
-    first_name: str
-    last_name: str
+class UserResponse(BaseModel):
+  id: int
+  email: str
+  first_name: str
+  last_name: str
 
-    class Config:
-        orm_mode = True
+  class Config:
+      orm_mode = True
+
 
 class LoginRequest(BaseModel):
   email:str
@@ -71,13 +72,36 @@ def login(user: LoginRequest, db:db_dependency, status_code=status.HTTP_200_OK):
   if not user or not check_password_hash(existing_user.password, user.password):
     raise HTTPException(status_code=401, detail='Invalid email or password')
   
+  # token = jwt.encode({
+  #             'sub': user.email, 
+  #             'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
+  #             JWT_KEY,
+  #             algorithm='HS256')
   token = jwt.encode({
-              'sub': user.email, 
-              'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
-              JWT_KEY,
-              algorithm='HS256')
-
+            'sub': user.email, 
+            'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
+            JWT_KEY,
+            algorithm='HS256')
   return {
+    "user_id": user.email,
     "token": token,
-    "token_type": "bearer"
   }
+
+security_schema = HTTPBearer()
+def verify_token(token: HTTPAuthorizationCredentials = Depends(security_schema)):
+  token_cred = token.credentials
+  try:
+    payload = jwt.decode(token_cred, JWT_KEY, algorithms=['HS256'])
+    return payload
+  except JWTError:
+    raise HTTPException(
+      status_code=status.HTTP_401_UNAUTHORIZED,
+      detail='Invalid or expired token'
+    )
+    
+
+@app.get('/verify_token')
+def verify(payload = Depends(verify_token)):
+  print(payload)
+  user_id = payload.get('sub')
+  return {'message' : user_id}
