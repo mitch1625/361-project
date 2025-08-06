@@ -1,12 +1,31 @@
 import { useState } from "react"
 import ButtonComponent from "../components/ButtonComponent"
 import { useNavigate } from "react-router-dom"
-
+import { useOutletContext } from "react-router-dom";
+import { api } from "../utilities";
 import { Link } from "react-router-dom"
+
 function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const {user, setUser} = useOutletContext()
+
+  const login = async(e) => {
+    e.preventDefault()
+    try {
+      let response = await api.post('/login/', {
+        email:email,
+        password:password
+      })
+      setUser(response.data.user_id)
+      localStorage.setItem('token', response.data.token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
+      navigate('/')
+    } catch (err) {
+        console.log(err.response.data)
+      }
+  }
 
  return (
   <>
@@ -15,7 +34,7 @@ function LoginPage() {
         <div className="login-register-header">My Account</div>
         <div className="login-register-subtext">Login below to access your account</div>
       </div>
-    <form type='submit' onSubmit={() => console.log('Logging in')}>
+    <form type='submit' onSubmit={(e) => login(e)}>
       <div className="form-labels">
         EMAIL ADDRESS
         <input 
@@ -34,8 +53,8 @@ function LoginPage() {
           
         </input>
       </div> 
+    <button id="login-register-button" type="submit">Login</button>
     </form>
-    <button id="login-register-button" type="button" onClick={()=>{alert(`Logging in:\n Email: ${email}\n Password: ${password}`), navigate('/')}}>Login</button>
     <div className="login-register-redirect-text">
       Don't have an account? Click <Link to='/register'>here to register.</Link>
     </div>

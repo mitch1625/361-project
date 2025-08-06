@@ -1,6 +1,7 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { data, Link, useOutletContext } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
+import { api } from "../utilities"
 
 function RegistrationPage() {
   const [email, setEmail] = useState("")
@@ -8,7 +9,30 @@ function RegistrationPage() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const navigate = useNavigate()
+  const {user, setUser} = useOutletContext()
   
+  const createUser = async(e) => {
+    e.preventDefault()
+    let data = {
+      "email": email,
+      "first_name": firstName,
+      "last_name": lastName,
+      "password": password
+    }
+
+    try {
+      let response = await api.post('/signup/', data)
+      if (response.status === 201) {
+        setUser(response.data.user_id)
+        localStorage.setItem('token', response.data.token);
+        api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`
+        }
+      } catch (err) {
+        console.log(err.response.data)
+      }
+
+  }
+
  return (
   <>
    <div id='registration-page'>
@@ -16,7 +40,7 @@ function RegistrationPage() {
         <div className="login-register-header">Register Account</div>
         <div className="login-register-subtext">Enter information to create an account</div>
       </div>
-    <form type='submit' onSubmit={() => console.log('Logging in')}>
+    <form type='submit' onSubmit={(e) => createUser(e)}>
       <div className="form-labels">
         FIRST NAME
         <input 
@@ -52,11 +76,8 @@ function RegistrationPage() {
         onChange={(e) => setPassword(e.target.value)}>
         </input>
       </div> 
+    <button id="login-register-button" type="submit">Register</button>
     </form>
-    <button id="login-register-button" type="button" 
-        onClick={()=>
-        {alert(`Registering in:\n Email: ${email}\n Password: ${password}`), navigate('/')}}
-        >Register</button>
     <div className="login-register-redirect-text">
       Already have an account? Click <Link to='/login'>here to login.</Link>
     </div>
