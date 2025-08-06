@@ -7,7 +7,7 @@ function HomePage() {
   const navigate = useNavigate()
 
   const redirectClick = () => {
-    navigate('/all-products')
+    navigate('/products')
   }
  return (
   <>
