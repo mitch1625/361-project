@@ -5,14 +5,14 @@ function IndividualProductComponent({product}) {
   const navigate = useNavigate()
 
   const detailsPageRedirect = () => {
-    navigate(`/products/${product.productName}`)
+    navigate(`/products/${product.name}`)
   }
   return (
     <>
     <div id='ind-product-container'>
       <img id='ind-product-img' src={coffeeImg}/>
       <div>
-      <h3 id="ind-product-details">{product.productName}</h3>
+      <h3 id="ind-product-details">{product.name}</h3>
       <div id='ind-product-flavors'>{product.flavors[0]} • {product.flavors[1]} • {product.flavors[2]}</div>
       </div>
       <div id='featured-button-container'>
