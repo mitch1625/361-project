@@ -105,3 +105,4 @@ def verify(payload = Depends(verify_token)):
   print(payload)
   user_id = payload.get('sub')
   return {'message' : user_id}
+

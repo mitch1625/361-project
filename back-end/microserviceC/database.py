@@ -5,11 +5,12 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 USERNAME = os.getenv('USERNAME')
 PASSWORD = os.getenv('PASSWORD')
-DB_NAME = os.getenv('USR_DB_NAME')
-URL_DATABASE = f'postgresql+psycopg://{USERNAME}:{PASSWORD}@localhost/user_db'
-
+PRODUCT_DB = os.getenv('PRODUCT_DB')
+URL_DATABASE = f'postgresql+psycopg://{USERNAME}:{PASSWORD}@localhost/{PRODUCT_DB}'
+ 
 
 engine = create_engine(URL_DATABASE)
 
