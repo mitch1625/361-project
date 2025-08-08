@@ -6,9 +6,8 @@ function IndividualProductComponent({product}) {
   const navigate = useNavigate()
   
   const detailsPageRedirect = () => {
-    navigate(`/products/${product.name}`)
+    navigate(`/products/${product.id}`)
   }
-
   const addItemToCart = async(e) => {
     e.preventDefault();
     let data = {

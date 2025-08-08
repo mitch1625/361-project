@@ -40,3 +40,12 @@ async def get_featured_products(db:db_dependency):
   print('Getting Featured Products')
   featured_products = db.query(models.Products).limit(3).all()
   return featured_products
+
+@app.get('/product/{id}')
+async def get_product_by_name(id:str, db:db_dependency):
+  product = db.query(models.Products).filter(models.Products.id == int(id)).first()
+
+  if not product:
+    raise HTTPException(status_code=404, detail="Product not found")
+  
+  return product
