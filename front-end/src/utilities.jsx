@@ -7,3 +7,7 @@ export const api = axios.create({
 export const productApi = axios.create({
   baseURL: "http://127.0.0.1:8001/"
 })
+
+export const cartApi = axios.create({
+  baseURL: "http://127.0.0.1:8002/"
+})

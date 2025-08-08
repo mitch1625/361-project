@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 USERNAME = os.getenv('USERNAME')
 PASSWORD = os.getenv('PASSWORD')
-DB_NAME = os.getenv('USR_DB_NAME')
+# DB_NAME = os.getenv('USR_DB_NAME')
 URL_DATABASE = f'postgresql+psycopg://{USERNAME}:{PASSWORD}@localhost/user_db'
 
 
