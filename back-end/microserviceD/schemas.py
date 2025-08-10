@@ -11,9 +11,9 @@ class CartItemUpdate(BaseModel):
 class CartItemResponse(CartItemBase):
     id: int
     product_details: Optional[dict] = None
-
-    class Config:
-        orm_mode = True
+    quantity:int
+    name:str
+    price:int
 
 class CartResponse(BaseModel):
     id: int
@@ -26,3 +26,5 @@ class CartResponse(BaseModel):
 class CartItemRequest(BaseModel):
     product_id: int
     quantity: int
+    name: str
+    price: int

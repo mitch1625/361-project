@@ -10,6 +10,7 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null)
   const {productId} = useParams()
   const [loading, setLoading] = useState(true)
+  const [price, setPrice] = useState('$14')
 
   useEffect(() => {
     const getProduct = async(e) => {
@@ -27,10 +28,12 @@ function ProductDetailPage() {
 
     const addItemToCart = async(e) => {
       e.preventDefault();
-      let data = {
-        product_id : product.id,
-        quantity : quantity
-      }
+    let data = {
+      product_id : product.id,
+      quantity : quantity,
+      name : product.name,
+      price: product.price
+    }
       let token = localStorage.getItem('token')
       if (token) {
         try {
@@ -62,7 +65,7 @@ function ProductDetailPage() {
   }
 
    if (loading) {
-    return <div>Loading...</div>  // Show loading message or spinner
+    return <div></div>
   }
  return ( 
   <>
@@ -80,7 +83,10 @@ function ProductDetailPage() {
       <p>{product.description}</p>
       <div id='product-details-size-price'>
         Size: 12 oz bottle<br/>
-        Price: $4.99
+        {price}
+        <select name='currency'>
+          <option></option>
+        </select>
       </div>
     </div>
     <div id='product-details-button-container'>

@@ -19,5 +19,7 @@ class CartItem(Base):
   cart_id = Column(Integer, ForeignKey("cart.id"), nullable=False)
   product_id = Column(Integer, nullable=False)
   quantity = Column(Integer, nullable=False, default=1)
+  name = Column(String, nullable=False)
+  price = Column(Integer, nullable=False)
   
   cart = relationship("Cart", back_populates="items")

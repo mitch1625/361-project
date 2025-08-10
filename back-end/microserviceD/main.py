@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or ["*"] to allow all
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,9 +53,11 @@ def get_or_create_cart(db: Session, user_id: str):
     return cart
 
 @app.post('/cart/add/')
-def add_to_cart(item: CartItemRequest, db: Session = Depends(get_db), user_id: str = Depends(get_current_user), status_code=status.HTTP_201_CREATED):
-    print(user_id)
-    print('Received the request')
+def add_to_cart(item: CartItemRequest, 
+                db: Session = Depends(get_db), 
+                user_id: str = Depends(get_current_user), 
+                status_code=status.HTTP_201_CREATED):
+    print('Adding item to cart...')
     cart = get_or_create_cart(db, user_id)
     cart_item = db.query(CartItem).filter(
         CartItem.cart_id == cart.id,
@@ -68,32 +70,52 @@ def add_to_cart(item: CartItemRequest, db: Session = Depends(get_db), user_id: s
         new_item = CartItem(
             cart_id=cart.id,
             product_id=item.product_id,
-            quantity=item.quantity
+            quantity=item.quantity,
+            name = item.name,
+            price = item.price
         )
         db.add(new_item)
-    
+        # print(new_item)
     db.commit()
-    print({"message": "Item added to cart", "product_id": item.product_id, "quantity": item.quantity})
+    print({"message": "Item added to cart", "product_id": item.product_id, "quantity": item.quantity, 'name': item.name})
     return JSONResponse(
         content={"message": "Item added to cart", "product_id": item.product_id, "quantity": item.quantity},
         status_code=status.HTTP_201_CREATED
     )
 
-@app.get('/cart', response_model=CartResponse)
-def get_cart(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    cart = db.query(Cart).filter(Cart.user_id == user_id).first()
+@app.get('/cart/')
+def get_cart(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    cart = get_or_create_cart(db, user_id)
+    # print(cart.id, cart.user_id, cart.items[0].name)
     if not cart:
         raise HTTPException(status_code=404, detail="Cart not found")
-    
+        
+    items_response = [
+        CartItemResponse(
+            id=item.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            name=item.name,
+            price=item.price
+        )
+        for item in cart.items  
+    ]
+   
     return {
         "id": cart.id,
         "user_id": cart.user_id,
-        "items": [
-            CartItemResponse(
-                id=item.id,
-                product_id=item.product_id,
-                quantity=item.quantity,
-            )
-            for item in cart.items
-        ]
+        "items": items_response,
     }
+
+@app.put('/cart/remove/{item_id}')
+def remove_from_cart(item_id: int, 
+                     db: Session = Depends(get_db), 
+                     user_id: str = Depends(get_current_user)):
+
+    cart = get_or_create_cart(db, user_id)
+    cart_item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.cart_id == cart.id).first()
+    if not cart_item:
+        raise HTTPException(status_code=404, detail="Item not found in cart")
+    
+    db.delete(cart_item)
+    db.commit()

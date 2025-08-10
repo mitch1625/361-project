@@ -12,7 +12,9 @@ function IndividualProductComponent({product}) {
     e.preventDefault();
     let data = {
       product_id : product.id,
-      quantity : 1
+      quantity : 1,
+      name : product.name,
+      price: product.price
     }
     let token = localStorage.getItem('token')
     if (token) {
