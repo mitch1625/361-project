@@ -9,8 +9,16 @@ from jose import JWTError, jwt
 from datetime import datetime, timezone, timedelta
 import os
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 models.Base.metadata.create_all(bind=engine)
 JWT_KEY = os.getenv('JWT_KEY')
 
@@ -45,8 +53,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 
-@app.post('/signup')
-async def create_user(user: SignUpRequest, db:db_dependency, status_code=status.HTTP_201_CREATED):
+@app.post('/signup/', status_code=status.HTTP_201_CREATED)
+async def create_user(user: SignUpRequest, db: Session = Depends(get_db)):
   existing_user = db.query(models.User).filter(models.User.email == user.email).first()
   if existing_user:
     raise HTTPException(status_code=400, detail='Email already registered to account')
@@ -58,20 +66,29 @@ async def create_user(user: SignUpRequest, db:db_dependency, status_code=status.
     last_name = user.last_name,
     password = hashed_password
   )
+  token = jwt.encode({
+          'sub': user.email, 
+          'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
+          JWT_KEY,
+          algorithm='HS256')
 
+ 
   db.add(new_user)
   db.commit()
   db.refresh(new_user)
-  return new_user
 
+  return {
+    "user_id" : user.email,
+    "token" : token
+  }
 
-@app.post('/login')
-def login(user: LoginRequest, db:db_dependency, status_code=status.HTTP_200_OK):
+@app.post('/login/')
+def login(user: LoginRequest, db:db_dependency, status_code=status.HTTP_201_CREATED):
   existing_user = db.query(models.User).filter(models.User.email == user.email).first()
 
   if not user or not check_password_hash(existing_user.password, user.password):
     raise HTTPException(status_code=401, detail='Invalid email or password')
-  
+
   # token = jwt.encode({
   #             'sub': user.email, 
   #             'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
@@ -98,11 +115,28 @@ def verify_token(token: HTTPAuthorizationCredentials = Depends(security_schema))
       status_code=status.HTTP_401_UNAUTHORIZED,
       detail='Invalid or expired token'
     )
-    
 
-@app.get('/verify_token')
-def verify(payload = Depends(verify_token)):
-  print(payload)
-  user_id = payload.get('sub')
-  return {'message' : user_id}
+@app.get("/userinfo/")
+def get_user_info(db: db_dependency, payload=Depends(verify_token)):
+    user_email = payload.get('sub')
+    if not user_email:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    user = db.query(models.User).filter(models.User.email == user_email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "display_name": f"{user.first_name} {user.last_name}"
+    }
+
+# @app.get('/verify_token/')
+# def verify(payload = Depends(verify_token)):
+#   print(payload)
+#   user_id = payload.get('sub')
+#   return {'message' : user_id}
 

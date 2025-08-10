@@ -8,7 +8,7 @@ import {productApi} from '../utilities'
 function AllProductsPage() {
   const [sortGroup, setSortGroup] = useState("AlphaA-Z")
   const [allProducts, setAllProducts] = useState([])
-
+  const [sortedProducts, setSortedProducts] = useState([])
   function handleSort(event) {
     setSortGroup(event.target.value)
   }
@@ -18,25 +18,31 @@ function AllProductsPage() {
     setAllProducts(response.data)
   }
 
+  useEffect(() => {
+    let sorted = [...allProducts]  // copy array to avoid mutating state
+    switch (sortGroup) {
+      case "AlphaA-Z":
+        sorted.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case "AlphaZ-A":
+        sorted.sort((a, b) => b.name.localeCompare(a.name))
+        break
+      case "PriceLow-High":
+        sorted.sort((a, b) => a.price - b.price)
+        break
+      case "PriceHigh-Low":
+        sorted.sort((a, b) => b.price - a.price)
+        break
+    }
 
-// const sortedProducts = [...allProducts].sort((a, b) => {
-//   switch (sortGroup) {
-//     case "AlphaA-Z":
-//       return a.productName.localeCompare(b.productName)
-//     case "AlphaZ-A":
-//       return b.productName.localeCompare(a.productName)
-//     case "PriceL-H":
-//       return a.price - b.price
-//     case "PriceH-L":
-//       return b.price - a.price
-//     default:
-//       return 0
-//   }
-// })
+    setSortedProducts(sorted)
+  }, [sortGroup, allProducts])
 
+  
 useEffect(() => {
   getAllProducts()
 },[])
+ 
 
  return (
   <>
@@ -46,7 +52,7 @@ useEffect(() => {
     </div>
     <SortByComponent handleSort={handleSort}/>
     <div id='all-product-container'>
-      {allProducts.map((product, index) => (
+      {sortedProducts.map((product, index) => (
         <IndividualProductComponent 
           product={product}
           key={index}

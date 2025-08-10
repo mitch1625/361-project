@@ -1,15 +1,58 @@
 import IndividualProductComponent from "../components/IndividualProductComponent"
-// import ProductDetailsComponent from "../components/ProductDetailsComponent"
 import coffeeImg from "../assets/coffeeBag.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { allProducts } from "../productData"
+import { productApi, cartApi } from "../utilities"
+
 
 function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
-  const {productName} = useParams()
-  
-  const product = allProducts.find(p => p.productName === productName)
+  const [product, setProduct] = useState(null)
+  const {productId} = useParams()
+  const [loading, setLoading] = useState(true)
+  const [price, setPrice] = useState('$14')
+
+  useEffect(() => {
+    const getProduct = async(e) => {
+      try {
+        const response = await productApi.get(`/product/${productId}`)
+        setProduct(response.data)
+        setLoading(false)
+      } catch (err) {
+        console.log(err.response)
+        setLoading(false)
+      }
+    } 
+    getProduct()
+  }, [productId])
+
+    const addItemToCart = async(e) => {
+      e.preventDefault();
+    let data = {
+      product_id : product.id,
+      quantity : quantity,
+      name : product.name,
+      price: product.price
+    }
+      let token = localStorage.getItem('token')
+      if (token) {
+        try {
+          console.log(data)
+          let response = await cartApi.post('/cart/add/', data, {
+            headers: {
+              'Authorization' : `Bearer ${token}`,
+              'Content-Type': 'application/json', 
+            }
+          })
+          console.log(response.status)
+          if (response.status === 201) {
+            alert('Item added to cart')
+          }
+        } catch (err) {
+          console.log(err.response.data)
+        }
+      }
+    }
 
   const decreaseQuantity = () => {
     if (quantity > 1){
@@ -21,10 +64,9 @@ function ProductDetailPage() {
     setQuantity(quantity + 1)
   }
 
-  const addToCart = () => {
-    alert(`Adding to ${quantity} products to cart`)
+   if (loading) {
+    return <div></div>
   }
-
  return ( 
   <>
   <div id="product-details-container">
@@ -32,7 +74,7 @@ function ProductDetailPage() {
           <div id='ind-product-container'>
             <img id='ind-product-img' src={coffeeImg}/>
             <div>
-            <h3 id="ind-product-details">{product.productName}</h3>
+            <h3 id="ind-product-details">{product.name}</h3>
             <div id='ind-product-flavors'>{product.flavors[0]} • {product.flavors[1]} • {product.flavors[2]}</div>
             </div>
             </div>
@@ -41,7 +83,10 @@ function ProductDetailPage() {
       <p>{product.description}</p>
       <div id='product-details-size-price'>
         Size: 12 oz bottle<br/>
-        Price: $4.99
+        {price}
+        <select name='currency'>
+          <option></option>
+        </select>
       </div>
     </div>
     <div id='product-details-button-container'>
@@ -50,7 +95,7 @@ function ProductDetailPage() {
         <input id='quantity-input' type='number' value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}></input>
         <button onClick={() => increaseQuantity()}>+</button>
       </div>
-      <button onClick={addToCart}>Add to Cart</button>
+      <button type="button" onClick={(e) => addItemToCart(e)} >Add to Cart</button>
     </div>
     <div>
     </div>
