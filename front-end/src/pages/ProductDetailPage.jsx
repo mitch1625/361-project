@@ -2,7 +2,7 @@ import IndividualProductComponent from "../components/IndividualProductComponent
 import coffeeImg from "../assets/coffeeBag.png"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { productApi, cartApi } from "../utilities"
+import { productApi, cartApi, convertApi } from "../utilities"
 
 
 function ProductDetailPage() {
@@ -11,6 +11,7 @@ function ProductDetailPage() {
   const {productId} = useParams()
   const [loading, setLoading] = useState(true)
   const [price, setPrice] = useState('$14')
+  const [selectedCurrency, setSelectedCurrency] = useState("USD")
 
   useEffect(() => {
     const getProduct = async(e) => {
@@ -26,7 +27,32 @@ function ProductDetailPage() {
     getProduct()
   }, [productId])
 
-    const addItemToCart = async(e) => {
+  useEffect(() => {
+    const convertCurrency = async() => {
+      try {
+        const response = await convertApi.post('/convert', {
+          amount: product.price,
+          from: "USD",
+          to_currency: selectedCurrency,
+        })
+        const converted = response.data.converted_amount
+        const symbolMap = {
+          USD: "$",
+          EUR: "€",
+          JPY: "¥",
+          GBP: "£"
+        }
+        
+        setPrice(`${symbolMap[selectedCurrency]}${converted}`)
+      } catch (err) {
+        console.log(err.response.data)
+      }
+    }
+
+    convertCurrency()
+  }, [selectedCurrency])
+
+  const addItemToCart = async(e) => {
       e.preventDefault();
     let data = {
       product_id : product.id,
@@ -67,25 +93,29 @@ function ProductDetailPage() {
    if (loading) {
     return <div></div>
   }
+
  return ( 
   <>
   <div id="product-details-container">
     <div id="product-details-product">
-          <div id='ind-product-container'>
-            <img id='ind-product-img' src={coffeeImg}/>
-            <div>
-            <h3 id="ind-product-details">{product.name}</h3>
-            <div id='ind-product-flavors'>{product.flavors[0]} • {product.flavors[1]} • {product.flavors[2]}</div>
-            </div>
-            </div>
+      <div id='ind-product-container'>
+        <img id='ind-product-img' src={coffeeImg}/>
+        <div>
+        <h3 id="ind-product-details">{product.name}</h3>
+        <div id='ind-product-flavors'>{product.flavors[0]} • {product.flavors[1]} • {product.flavors[2]}</div>
+        </div>
+        </div>
     </div>
     <div id='product-details-text'>
       <p>{product.description}</p>
       <div id='product-details-size-price'>
         Size: 12 oz bottle<br/>
         {price}
-        <select name='currency'>
-          <option></option>
+        <select id='currency-select' name='currency' value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)}>
+          <option className="currency">USD</option>
+          <option className="currency">EUR</option>
+          <option className="currency">JPY</option>
+          <option className="currency">GBP</option>
         </select>
       </div>
     </div>

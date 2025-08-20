@@ -75,7 +75,7 @@ def add_to_cart(item: CartItemRequest,
             price = item.price
         )
         db.add(new_item)
-        # print(new_item)
+        print('Added to cart: ', new_item)
     db.commit()
     print({"message": "Item added to cart", "product_id": item.product_id, "quantity": item.quantity, 'name': item.name})
     return JSONResponse(
@@ -86,7 +86,7 @@ def add_to_cart(item: CartItemRequest,
 @app.get('/cart/')
 def get_cart(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     cart = get_or_create_cart(db, user_id)
-    # print(cart.id, cart.user_id, cart.items[0].name)
+    print(f'Getting cart for {cart.user_id}')
     if not cart:
         raise HTTPException(status_code=404, detail="Cart not found")
         
@@ -116,6 +116,6 @@ def remove_from_cart(item_id: int,
     cart_item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.cart_id == cart.id).first()
     if not cart_item:
         raise HTTPException(status_code=404, detail="Item not found in cart")
-    
+    print('Deleting from cart')
     db.delete(cart_item)
-    db.commit()
+    db.commit() 

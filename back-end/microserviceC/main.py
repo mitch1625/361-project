@@ -43,6 +43,7 @@ async def get_featured_products(db:db_dependency):
 
 @app.get('/product/{id}')
 async def get_product_by_name(id:str, db:db_dependency):
+  print(f'Getting product with ID {id}')
   product = db.query(models.Products).filter(models.Products.id == int(id)).first()
 
   if not product:
