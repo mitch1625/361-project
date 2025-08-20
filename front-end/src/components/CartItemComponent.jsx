@@ -5,7 +5,7 @@ import {cartApi} from "../utilities/"
 const CartItemComponent = ({product}) => {
   const [quantity, setQuantity] = useState(product.quantity)
   const [price, setPrice] = useState(product.price * product.quantity) 
-  
+
   const deleteCartItem = async(e) => {
     let token = localStorage.getItem('token')
     if (token) {

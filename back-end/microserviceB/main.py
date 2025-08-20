@@ -55,6 +55,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 @app.post('/signup/', status_code=status.HTTP_201_CREATED)
 async def create_user(user: SignUpRequest, db: Session = Depends(get_db)):
+  print('Registering Account')
   existing_user = db.query(models.User).filter(models.User.email == user.email).first()
   if existing_user:
     raise HTTPException(status_code=400, detail='Email already registered to account')
@@ -85,20 +86,16 @@ async def create_user(user: SignUpRequest, db: Session = Depends(get_db)):
 @app.post('/login/')
 def login(user: LoginRequest, db:db_dependency, status_code=status.HTTP_201_CREATED):
   existing_user = db.query(models.User).filter(models.User.email == user.email).first()
-
+  print('Attempting to login...')
   if not user or not check_password_hash(existing_user.password, user.password):
     raise HTTPException(status_code=401, detail='Invalid email or password')
 
-  # token = jwt.encode({
-  #             'sub': user.email, 
-  #             'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
-  #             JWT_KEY,
-  #             algorithm='HS256')
   token = jwt.encode({
             'sub': user.email, 
             'exp': datetime.now(timezone.utc) + timedelta(hours=1)}, 
             JWT_KEY,
             algorithm='HS256')
+  print(f'User ${user.email} logged in')
   return {
     "user_id": user.email,
     "token": token,
@@ -133,10 +130,3 @@ def get_user_info(db: db_dependency, payload=Depends(verify_token)):
         "last_name": user.last_name,
         "display_name": f"{user.first_name} {user.last_name}"
     }
-
-# @app.get('/verify_token/')
-# def verify(payload = Depends(verify_token)):
-#   print(payload)
-#   user_id = payload.get('sub')
-#   return {'message' : user_id}
-
